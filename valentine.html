@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Veux-tu être ma Valentine? 💝</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8d4c0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Floating hearts background */
+        .heart-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 20px;
+            animation: float-up 8s infinite ease-in;
+            opacity: 0.3;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.4;
+            }
+            90% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Question box */
+        .question-box {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #ffd1d1 100%);
+            padding: 60px 50px;
+            border-radius: 40px;
+            box-shadow: 
+                0 20px 60px rgba(255, 105, 135, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+            text-align: center;
+            max-width: 500px;
+            animation: pulse-glow 3s ease-in-out infinite;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 
+                    0 20px 60px rgba(255, 105, 135, 0.3),
+                    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+            }
+            50% {
+                transform: scale(1.02);
+                box-shadow: 
+                    0 25px 80px rgba(255, 105, 135, 0.4),
+                    0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+                    0 0 30px rgba(255, 105, 135, 0.2);
+            }
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #8b0000;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: bounce-in 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounce-in {
+            0% {
+                transform: scale(0) rotate(-10deg);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.1) rotate(2deg);
+                opacity: 1;
+            }
+            80% {
+                transform: scale(0.95) rotate(-1deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            position: relative;
+            min-height: 60px;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.3em;
+            font-weight: 600;
+            font-family: 'Quicksand', sans-serif;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.5);
+        }
+
+        .btn-yes:active {
+            transform: scale(1.05) translateY(-1px);
+            transition: all 0.1s ease;
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #8b0000;
+            position: absolute;
+            transition: all 0.05s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .btn-no:hover {
+            transform: scale(1.05);
+        }
+
+        /* Pong Game */
+        .game-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+        
+        .game-container.active {
+            opacity: 1;
+        }
+
+        .game-header {
+            text-align: center;
+            color: #ff6b9d;
+            padding: 20px;
+            font-family: 'Pacifico', cursive;
+        }
+
+        .game-header h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .score {
+            font-size: 1.5em;
+            color: white;
+            font-weight: 600;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            background: #0f3460;
+            border-radius: 10px;
+            box-shadow: 0 0 40px rgba(255, 107, 157, 0.3);
+            max-width: 90vw;
+            max-height: 70vh;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        /* Victory screen */
+        .victory-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b9d 0%, #feca57 100%);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            animation: victory-appear 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+        }
+        
+        .victory-screen.active {
+            opacity: 1;
+        }
+
+        @keyframes victory-appear {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(-5deg);
+            }
+            60% {
+                transform: scale(1.05) rotate(2deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .victory-content {
+            text-align: center;
+            color: white;
+            padding: 40px;
+        }
+
+        .victory-content h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 4em;
+            margin-bottom: 30px;
+            animation: victory-text 2s ease-in-out infinite alternate;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes victory-text {
+            0% {
+                transform: scale(1) translateY(0);
+            }
+            100% {
+                transform: scale(1.08) translateY(-5px);
+            }
+        }
+
+        .hearts-explosion {
+            position: absolute;
+            font-size: 50px;
+            animation: explode 2s ease-out infinite;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .game-instructions {
+            color: #ffeaa7;
+            font-size: 1.1em;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .question-box {
+                padding: 40px 30px;
+                margin: 20px;
+                border-radius: 30px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 30px;
+            }
+
+            button {
+                padding: 12px 30px;
+                font-size: 1.1em;
+            }
+
+            .game-header h2 {
+                font-size: 1.5em;
+            }
+
+            .victory-content h1 {
+                font-size: 2.5em;
+                padding: 0 20px;
+            }
+            
+            .victory-content p {
+                font-size: 1.5em !important;
+            }
+            
+            .game-instructions {
+                font-size: 0.9em;
+                padding: 0 20px;
+            }
+            
+            canvas {
+                max-width: 95vw;
+                max-height: 60vh;
+            }
+            
+            /* Better touch targets */
+            .btn-yes, .btn-no {
+                min-width: 120px;
+                min-height: 50px;
+            }
+            
+            /* Prevent zoom on double tap */
+            button {
+                touch-action: manipulation;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .question-box {
+                padding: 30px 20px;
+                margin: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 25px;
+            }
+            
+            button {
+                padding: 10px 25px;
+                font-size: 1em;
+            }
+            
+            .game-header h2 {
+                font-size: 1.2em;
+            }
+            
+            .score {
+                font-size: 1.2em;
+            }
+            
+            .victory-content h1 {
+                font-size: 2em;
+            }
+            
+            .victory-content p {
+                font-size: 1.2em !important;
+            }
+            
+            .game-instructions {
+                font-size: 0.8em;
+            }
+        }
+        
+        /* Disable text selection for better mobile experience */
+        .question-box, .game-container, .victory-screen {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background hearts -->
+    <div class="heart-bg" id="heartBg"></div>
+
+    <!-- Question screen -->
+    <div class="container" id="questionScreen">
+        <div class="question-box">
+            <h1>Veux-tu être ma Valentine ? 💝</h1>
+            <div class="buttons">
+                <button class="btn-yes" onclick="startGame()">Oui ❤️</button>
+                <button class="btn-no" id="btnNo">Non</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pong game -->
+    <div class="game-container" id="gameContainer">
+        <div class="game-header">
+            <h2>Gagne le cœur ! 💕</h2>
+            <div class="score">Score: <span id="score">0</span> / 3</div>
+            <div class="game-instructions">
+                📱 Mobile: Touchez pour bouger | 🖱️ PC: Déplacez la souris
+            </div>
+        </div>
+        <canvas id="pongCanvas"></canvas>
+    </div>
+
+    <!-- Victory screen -->
+    <div class="victory-screen" id="victoryScreen">
+        <div class="victory-content">
+            <h1>Tu es digne d'avoir mon cœur ! 💖</h1>
+            <p style="font-size: 2em; margin-top: 20px;">✨ Félicitations ! ✨</p>
+        </div>
+    </div>
+
+    <script>
+        // Prevent scrolling and bouncing on mobile
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.tagName !== 'CANVAS') {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Prevent pull-to-refresh
+        document.body.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        let lastTouchEnd = 0;
+        document.body.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        // Floating hearts background
+        function createFloatingHearts() {
+            const heartBg = document.getElementById('heartBg');
+            const isMobile = window.innerWidth <= 768;
+            const interval = isMobile ? 1200 : 800; // Less frequent on mobile for performance
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.textContent = '❤️';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                heartBg.appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 10000);
+            }, interval);
+        }
+        createFloatingHearts();
+
+        // Moving "Non" button
+        const btnNo = document.getElementById('btnNo');
+        let noAttempts = 0;
+        let isTouching = false;
+        const isMobile = window.innerWidth <= 768;
+
+        // On mobile, make the button move constantly
+        if (isMobile) {
+            // Initial random position
+            setTimeout(() => {
+                moveButton();
+            }, 500);
+            
+            // Keep moving every 1.5 seconds on mobile
+            setInterval(() => {
+                moveButton();
+            }, 1500);
+        }
+
+        // Better touch handling for mobile
+        btnNo.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            isTouching = true;
+            moveButton(e);
+        });
+        
+        btnNo.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (isTouching) {
+                moveButton(e);
+            }
+        });
+        
+        btnNo.addEventListener('touchend', () => {
+            isTouching = false;
+        });
+
+        btnNo.addEventListener('mouseover', moveButton);
+        btnNo.addEventListener('mouseenter', moveButton);
+        btnNo.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveButton(e);
+        });
+
+        function moveButton(e) {
+            if (e) e.preventDefault();
+            noAttempts++;
+            
+            // Make the button move in a much larger area (entire viewport)
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Calculate safe boundaries
+            const buttonWidth = btnNo.offsetWidth;
+            const buttonHeight = btnNo.offsetHeight;
+            
+            // Random position anywhere on screen, avoiding edges
+            const margin = window.innerWidth < 768 ? 30 : 50; // Smaller margin on mobile
+            const newX = margin + Math.random() * (viewportWidth - buttonWidth - margin * 2);
+            const newY = margin + Math.random() * (viewportHeight - buttonHeight - margin * 2);
+            
+            // Make it fixed position so it can move anywhere on screen
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = newX + 'px';
+            btnNo.style.top = newY + 'px';
+            
+            // Super smooth and fast transition - faster on mobile
+            const baseSpeed = window.innerWidth < 768 ? 0.08 : 0.1;
+            const speed = Math.max(0.02, baseSpeed - noAttempts * 0.008);
+            btnNo.style.transition = `all ${speed}s cubic-bezier(0.34, 1.56, 0.64, 1)`;
+            
+            // Add smooth shake effect
+            btnNo.style.transform = 'rotate(' + (Math.random() * 15 - 7.5) + 'deg) scale(1.05)';
+            setTimeout(() => {
+                btnNo.style.transform = 'rotate(0deg) scale(1)';
+            }, 150);
+        }
+
+        // Start Pong game
+        function startGame() {
+            const questionScreen = document.getElementById('questionScreen');
+            const gameContainer = document.getElementById('gameContainer');
+            
+            // Fade out question screen
+            questionScreen.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+            questionScreen.style.opacity = '0';
+            questionScreen.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                questionScreen.style.display = 'none';
+                gameContainer.style.display = 'block';
+                
+                // Fade in game container
+                setTimeout(() => {
+                    gameContainer.classList.add('active');
+                    initPongGame();
+                }, 50);
+            }, 500);
+        }
+
+        // Pong Game Logic
+        function initPongGame() {
+            const canvas = document.getElementById('pongCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Detect if mobile
+            const isMobile = window.innerWidth <= 768;
+            
+            // Responsive canvas size
+            function resizeCanvas() {
+                const maxWidth = Math.min(window.innerWidth * 0.9, 800);
+                const maxHeight = Math.min(window.innerHeight * 0.7, 600);
+                canvas.width = maxWidth;
+                canvas.height = maxHeight;
+                
+                // Update paddle and opponent positions on resize
+                paddle.x = 20;
+                paddle.y = Math.min(paddle.y, canvas.height - paddle.height);
+                opponent.x = canvas.width - 35;
+                opponent.y = Math.min(opponent.y, canvas.height - opponent.height);
+                targetZone.y = canvas.height / 2 - 30;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            const paddle = {
+                width: 15,
+                height: isMobile ? 120 : 100, // Larger paddle on mobile
+                x: 20,
+                y: canvas.height / 2 - (isMobile ? 60 : 50),
+                dy: 0
+            };
+
+            const opponent = {
+                width: 15,
+                height: 100,
+                x: canvas.width - 35,
+                y: canvas.height / 2 - 50,
+                speed: isMobile ? 3.5 : 4 // Slightly slower on mobile
+            };
+
+            const ball = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                radius: isMobile ? 12 : 10, // Slightly larger ball on mobile
+                dx: isMobile ? 4 : 5,
+                dy: isMobile ? 2.5 : 3
+            };
+
+            // Red target zone in the middle
+            const targetZone = {
+                y: canvas.height / 2 - 30,
+                height: 60
+            };
+
+            let score = 0;
+            let mouseY = canvas.height / 2;
+            let touchY = canvas.height / 2;
+            let lastTouchY = canvas.height / 2;
+
+            // Mouse control
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                mouseY = e.clientY - rect.top;
+            });
+
+            // Better touch control with smoother tracking
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const newTouchY = e.touches[0].clientY - rect.top;
+                
+                // Smooth interpolation for better control
+                touchY = lastTouchY + (newTouchY - lastTouchY) * 0.5;
+                lastTouchY = touchY;
+            }, { passive: false });
+            
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                touchY = e.touches[0].clientY - rect.top;
+                lastTouchY = touchY;
+            }, { passive: false });
+
+            function drawPaddle(x, y, width, height) {
+                ctx.fillStyle = '#ff6b9d';
+                ctx.fillRect(x, y, width, height);
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, width, height);
+            }
+
+            function drawBall() {
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#feca57';
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            function drawTargetZone() {
+                // Red target zone with "MON CŒUR" label
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                ctx.fillRect(opponent.x, targetZone.y, opponent.width, targetZone.height);
+                
+                ctx.strokeStyle = '#ff0000';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(opponent.x, targetZone.y, opponent.width, targetZone.height);
+                
+                // Label - smaller on mobile
+                ctx.save();
+                ctx.translate(opponent.x + opponent.width + 10, targetZone.y + targetZone.height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillStyle = '#ff6b9d';
+                ctx.font = isMobile ? 'bold 12px Quicksand' : 'bold 16px Quicksand';
+                ctx.textAlign = 'center';
+                ctx.fillText('MON CŒUR', 0, 0);
+                ctx.restore();
+            }
+
+            function updatePaddle() {
+                const targetY = isMobile ? touchY : mouseY;
+                // Smoother paddle movement with interpolation
+                const smoothFactor = isMobile ? 0.2 : 0.3;
+                paddle.y += (targetY - paddle.height / 2 - paddle.y) * smoothFactor;
+                paddle.y = Math.max(0, Math.min(canvas.height - paddle.height, paddle.y));
+            }
+
+            function updateOpponent() {
+                const opponentCenter = opponent.y + opponent.height / 2;
+                if (opponentCenter < ball.y - 35) {
+                    opponent.y += opponent.speed;
+                } else if (opponentCenter > ball.y + 35) {
+                    opponent.y -= opponent.speed;
+                }
+                opponent.y = Math.max(0, Math.min(canvas.height - opponent.height, opponent.y));
+            }
+
+            function updateBall() {
+                ball.x += ball.dx;
+                ball.y += ball.dy;
+
+                // Wall collision
+                if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+                    ball.dy = -ball.dy;
+                }
+
+                // Paddle collision
+                if (ball.x - ball.radius < paddle.x + paddle.width &&
+                    ball.y > paddle.y &&
+                    ball.y < paddle.y + paddle.height) {
+                    ball.dx = -ball.dx;
+                    ball.x = paddle.x + paddle.width + ball.radius;
+                    
+                    // Add angle based on where it hit
+                    const hitPos = (ball.y - paddle.y) / paddle.height;
+                    ball.dy = (hitPos - 0.5) * 10;
+                }
+
+                // Opponent collision - check if in target zone
+                if (ball.x + ball.radius > opponent.x &&
+                    ball.y > opponent.y &&
+                    ball.y < opponent.y + opponent.height) {
+                    
+                    // Check if hit the red target zone
+                    if (ball.y >= targetZone.y && ball.y <= targetZone.y + targetZone.height) {
+                        score++;
+                        document.getElementById('score').textContent = score;
+                        
+                        if (score >= 3) {
+                            showVictory();
+                            return;
+                        }
+                        
+                        // Flash effect - more subtle on mobile
+                        canvas.style.boxShadow = '0 0 60px rgba(255, 0, 0, 0.8)';
+                        setTimeout(() => {
+                            canvas.style.boxShadow = '0 0 40px rgba(255, 107, 157, 0.3)';
+                        }, 200);
+                        
+                        // Haptic feedback on mobile if available
+                        if (isMobile && navigator.vibrate) {
+                            navigator.vibrate(100);
+                        }
+                    }
+                    
+                    ball.dx = -ball.dx;
+                    ball.x = opponent.x - ball.radius;
+                }
+
+                // Reset if ball goes out
+                if (ball.x < 0 || ball.x > canvas.width) {
+                    ball.x = canvas.width / 2;
+                    ball.y = canvas.height / 2;
+                    ball.dx = (ball.dx > 0 ? -5 : 5);
+                    ball.dy = (Math.random() - 0.5) * 6;
+                }
+            }
+
+            function draw() {
+                // Clear canvas
+                ctx.fillStyle = '#0f3460';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw center line
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([10, 10]);
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, 0);
+                ctx.lineTo(canvas.width / 2, canvas.height);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                drawTargetZone();
+                drawPaddle(paddle.x, paddle.y, paddle.width, paddle.height);
+                drawPaddle(opponent.x, opponent.y, opponent.width, opponent.height);
+                drawBall();
+            }
+
+            function gameLoop() {
+                updatePaddle();
+                updateOpponent();
+                updateBall();
+                draw();
+                
+                if (score < 3) {
+                    requestAnimationFrame(gameLoop);
+                }
+            }
+
+            gameLoop();
+        }
+
+        // Victory screen
+        function showVictory() {
+            const victoryScreen = document.getElementById('victoryScreen');
+            const gameContainer = document.getElementById('gameContainer');
+            
+            // Fade out game
+            gameContainer.style.transition = 'opacity 0.6s ease-out';
+            gameContainer.style.opacity = '0';
+            
+            setTimeout(() => {
+                victoryScreen.style.display = 'flex';
+                setTimeout(() => {
+                    victoryScreen.classList.add('active');
+                }, 50);
+            }, 600);
+            
+            // Create heart explosions
+            setTimeout(() => {
+                for (let i = 0; i < 30; i++) {
+                    setTimeout(() => {
+                        const heart = document.createElement('div');
+                        heart.className = 'hearts-explosion';
+                        heart.textContent = '❤️';
+                        heart.style.left = '50%';
+                        heart.style.top = '50%';
+                        
+                        const angle = (i / 30) * Math.PI * 2;
+                        const distance = 300 + Math.random() * 200;
+                        heart.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                        heart.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+                        heart.style.animationDelay = (Math.random() * 0.3) + 's';
+                        
+                        victoryScreen.appendChild(heart);
+                        
+                        setTimeout(() => heart.remove(), 3000);
+                    }, i * 80);
+                }
+            }, 700);
+        }
+    </script>
+</body>
+</html>
